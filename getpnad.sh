@@ -1,12 +1,4 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-# Adjustable parameters (only change this if you know what you're doing)
-base_url="ftp://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Trimestral/Microdados"
-rest_time=2
-
-
-
+#!/bin/bash
 
 # Copyright (C) 2020  Gustavo Pereira
 
@@ -23,13 +15,26 @@ rest_time=2
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+set -euo pipefail
+
+#
+# Adjustable parameters (only change this if you know what you're doing)
+base_url="ftp://ftp.ibge.gov.br/Trabalho_e_Rendimento/Pesquisa_Nacional_por_Amostra_de_Domicilios_continua/Trimestral/Microdados"
+rest_time=2
+
+
+
+
 err() {
     echo "[$(date +'%Y-%m-%dT%H:%M:%S%z')] ERROR: $@" >&2; exit 1;
 }
 
 usage() { echo "Usage: $0 [-b YYYY] [-e YYYY] [-d (yes|no|only)]" 1>&2; exit 1; }
 
-
+dic_opt="yes"
+year_begin=2012
+year_end=2012
 
 while getopts "d:b:e:" opt; do
     case $opt in
@@ -60,10 +65,6 @@ while getopts "d:b:e:" opt; do
 done
 
 # DEFAULT ARGS  -----------------------------------------------------------------
-# For dictionary:
-if [[ -z "$dic_opt" ]]; then
-   dic_opt=yes
-fi
 
 if [[ "$dic_opt" == "only" ]]; then
     [[ -n "$year_begin" ]] && echo "Option -b set with -d only; overriding"
@@ -96,13 +97,8 @@ currdir=${currpath##*/}
 prevdirpath=$(dirname $currpath)
 prevdir=${prevdirpath##*/}
 
-if [[ "$currdir" != "shell" || "$prevdir" != "src" ]]; then
-    err "Script not being run from \$proj_path/src/shell"
-    exit 1
-fi
-
+#
 # If non existent, create data & tmp directory
-# mkdir -p ../../data
 mkdir -p .tmp
 cd .tmp
 
@@ -135,20 +131,25 @@ if [[ "$dic_opt" != "no" ]]; then
     curl -# "$base_url/Documentacao/$dict_file" -o "doc.zip"
 
     doc_contents=$(unzip -ql doc.zip)
-    file_check="Input_PNADC_trimestral.txt"
 
-    nm=$(grep -c "$file_check" <<<$doc_contents)
-    if [[ $nm -eq 0 ]]; then
-        # This means `Input_PNADC_trimestral.txt` doesn't show up in
-        # Dicionario_e_input.zip
-        cd ..
-        err "Input dictionary not found in zip file."
+    # Look for the text file
+    nm=$(grep -c ".txt$" <<<$doc_contents)
+
+    if [[ $nm -ne 1 ]]; then
+       err "Either no text file or more than one in $dict_file"
     fi
 
 
     # If reach here, everything seems fine, so download and move dictionary.
-    unzip -q doc.zip $file_check
-    mv $file_check ..
+    unzip -q doc.zip "*.txt"
+
+    file_check=$(find . -iregex ".*txt$")
+
+    if [[  "$file_check"  == "" ]]; then
+       err "Error unziping text file"
+    fi
+
+    mv $file_check ../
     sleep $rest_time
 fi
 
