@@ -1,0 +1,23 @@
+* getpnad.sh -- a simple utility for fetching PNAD data
+
+** Dependencies
+
+The versions listed below were the ones used in the testing process, not necessarily the oldest compatible version. Please make a PR if the script runs with an older version.
+
+| Dep  | Version |
+|------+---------|
+| bash |  5.0.11 |
+| curl |  7.67.0 |
+| sed  |     4.7 |
+
+** Documentation
+
+Options
+
+- -b YYYY :: Start year. Defaults to 2012 if `-e` unset; equal to `-e` otherwise
+- -e YYYY :: End year. Defaults to 2012 if `-b` unset; equal to `-b` otherwise
+- -d (yes|no|only) :: If `yes`, downloads the variable dictionary. If `no`,
+  skip downloading it. If `only`, download only the variable dictionary.
+  Defaults to `yes`.
+
+Note: saves to the current directory.
