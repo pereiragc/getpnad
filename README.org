@@ -13,7 +13,7 @@ The versions listed below were the ones used in the testing process, not necessa
 
 ** Documentation
 
-Options
+Options:
 
 - -b YYYY :: Start year. Defaults to 2012 if `-e` unset; equal to `-e` otherwise
 - -e YYYY :: End year. Defaults to 2012 if `-b` unset; equal to `-b` otherwise
@@ -21,4 +21,4 @@ Options
   skip downloading it. If `only`, download only the variable dictionary.
   Defaults to `yes`.
 
-Note: saves to the current directory.
+/Note: saves to the current directory./
