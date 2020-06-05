@@ -9,6 +9,7 @@ The versions listed below were the ones used in the testing process, not necessa
 | bash |  5.0.11 |
 | curl |  7.67.0 |
 | sed  |     4.7 |
+| find |   4.7.0 |
 
 ** Documentation
 
